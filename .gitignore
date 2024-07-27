@@ -3,3 +3,9 @@
 
 # Ignore Gradle build output directory
 build
+
+# Ignore LSP Generated directories
+bin
+.settings
+.classpath
+.project
