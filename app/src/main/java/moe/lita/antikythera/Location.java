@@ -22,4 +22,8 @@ public class Location {
         Location location = (Location) obj;
         return x == location.x && y == location.y && rotation == location.rotation;
     }
+
+    public Location clone() {
+        return new Location(x, y, rotation);
+    }
 }

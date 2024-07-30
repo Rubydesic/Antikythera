@@ -43,3 +43,7 @@ tasks.named<Test>("test") {
 
     this.testLogging.showStandardStreams = true
 }
+
+tasks.getByName<JavaExec>("run") {
+    standardInput = System.`in`
+}

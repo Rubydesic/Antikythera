@@ -36,13 +36,12 @@ class TetrominoTest {
                 .set(1, 2, true)
                 .set(3, 2, true);
 
-        Location location = new Location(1, 3, 0);
-        Tetromino mino = Tetromino.Z;
+        Game game = new Game(board, new Location(1, 3, 0), Tetromino.Z);
 
-        location = board.rotate(location, mino, 1);
-        assertEquals(new Location(1, 1, 1), location);
-        location = board.rotate(location, mino, 0);
-        assertEquals(new Location(1, 3, 0), location);
+        game.rotate(1);
+        assertEquals(new Location(1, 1, 1), game.location);
+        game.rotate(0);
+        assertEquals(new Location(1, 3, 0), game.location);
     }
 
     @Test
@@ -53,13 +52,12 @@ class TetrominoTest {
                 .set(2, 4, true)
                 .set(3, 1, true);
 
-        Location location = new Location(1, 3, 0);
-        Tetromino mino = Tetromino.T;
+        Game game = new Game(board, new Location(1, 3, 0), Tetromino.T);
 
-        location = board.rotate(location, mino, 3);
-        assertEquals(new Location(2, 1, 3), location);
-        location = board.rotate(location, mino, 0);
-        assertEquals(new Location(1, 3, 0), location);
+        game.rotate(3);
+        assertEquals(new Location(2, 1, 3), game.location);
+        game.rotate(0);
+        assertEquals(new Location(1, 3, 0), game.location);
     }
 
     @Test
@@ -70,12 +68,11 @@ class TetrominoTest {
                 .set(2, 2, true)
                 .set(3, 2, true);
 
-        Location location = new Location(1, 3, 0);
-        Tetromino mino = Tetromino.I;
+        Game game = new Game(board, new Location(1, 3, 0), Tetromino.I);
 
-        location = board.rotate(location, mino, 1);
-        assertEquals(new Location(0, 2, 1), location);
-        location = board.rotate(location, mino, 0);
-        assertEquals(new Location(1, 3, 0), location);
+        game.rotate(1);
+        assertEquals(new Location(0, 2, 1), game.location);
+        game.rotate(0);
+        assertEquals(new Location(1, 3, 0), game.location);
     }
 }

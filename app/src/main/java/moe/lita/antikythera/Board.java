@@ -16,14 +16,18 @@ public class Board {
         this.height = height;
     }
 
+    public boolean isValid(int x, int y) {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
     public boolean get(int x, int y) {
-        if (x >= 0 && x < width && y >= 0 && y < height)
+        if (isValid(x, y))
             return data[y][x];
         return true;
     }
 
     public Board set(int x, int y, boolean val) {
-        if (x >= 0 && x < width && y >= 0 && y < height)
+        if (isValid(x, y))
             data[y][x] = val;
         return this;
     }
@@ -39,20 +43,6 @@ public class Board {
             if (get(block[0] + location.x, block[1] + location.y))
                 return false;
         return true;
-    }
-
-    public Location rotate(Location location, Tetromino tetromino, int rotation) {
-        rotation = Math.floorMod(rotation, 4);
-        int[][][] kickTable = tetromino.getKickTable();
-        for (int i = 0; i < kickTable[0].length; i++) {
-            int x = kickTable[location.rotation][i][0] - kickTable[rotation][i][0];
-            int y = kickTable[location.rotation][i][1] - kickTable[rotation][i][1];
-            Location newLocation = new Location(location.x + x, location.y + y, rotation);
-            if (check(newLocation, tetromino))
-                return newLocation;
-        }
-
-        return location; // fail
     }
 
     public String toString() {
