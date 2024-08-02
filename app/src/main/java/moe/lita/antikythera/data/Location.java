@@ -1,4 +1,6 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
+
+import java.util.Arrays;
 
 public class Location {
     public int x;
@@ -21,6 +23,10 @@ public class Location {
 
         Location location = (Location) obj;
         return x == location.x && y == location.y && rotation == location.rotation;
+    }
+
+    public int hashCode() {
+        return Arrays.hashCode(new int[] { x, y, rotation });
     }
 
     public Location clone() {

@@ -1,7 +1,9 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -10,7 +12,7 @@ import java.util.stream.Stream;
 public class Game {
     public static final int BOARD_HEIGHT = 23;
     public static final int BOARD_WIDTH = 10;
-    public static final Location DEFAULT_LOCATION = new Location(4, 21, 0);
+    public static final Location DEFAULT_LOCATION = new Location(4, BOARD_HEIGHT - 2, 0);
 
     public Board board;
     public boolean hasHold = true;
@@ -46,7 +48,7 @@ public class Game {
         }
 
         public Builder holdPiece(Tetromino holdPiece) {
-            game.activePiece = holdPiece;
+            game.holdPiece = holdPiece;
             return this;
         }
 
@@ -65,7 +67,7 @@ public class Game {
             if (game.queue == null) game.queue = new ArrayDeque<>();
             if (game.random == null) game.random = new Randomizer(1);
 
-            while (game.queue.size() < 7)
+            while (game.queue.size() < 5)
                 game.queueStrategy.accept(game.queue, game.random);
             if (game.activePiece == null) game.activePiece = game.queue.poll();
             if (game.location == null) game.location = DEFAULT_LOCATION.clone();
@@ -77,13 +79,32 @@ public class Game {
     public Game clone() {
         return new Builder()
                 .board(board.clone())
-                .queue(new ArrayDeque<>(queue))
+                .queue(new ArrayDeque<Tetromino>(queue))
                 .random(random.clone())
                 .activePiece(activePiece)
                 .holdPiece(holdPiece)
                 .hasHold(hasHold)
                 .location(location.clone())
                 .build();
+    }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Game)) return false;
+        Game game = (Game) obj;
+
+        return game.board.equals(board)
+                && Arrays.equals(game.queue.toArray(), queue.toArray())
+                && game.random.equals(random)
+                && game.activePiece == activePiece
+                && game.holdPiece == holdPiece
+                && game.hasHold == hasHold
+                && game.location.equals(location);
+    }
+
+    public int hashCode() {
+        return Objects.hash(
+                board, Arrays.hashCode(queue.toArray()), random,
+                activePiece, holdPiece, hasHold, location);
     }
 
     private Game() {}
@@ -104,7 +125,11 @@ public class Game {
                 + Stream.of(grid)
                         .map(i -> "|" + new String(i) + "|")
                         .collect(Collectors.joining("\n"))
-                + "\n" + "-".repeat(12) + "\n";
+                + "\n" + "-".repeat(12) + "\n"
+                + String.format("Hold%s: [%s] Queue: %s\n",
+                        hasHold ? "*" : "",
+                        holdPiece,
+                        queue.stream().limit(5).toList().toString());
     }
 
     public boolean tapLeft() {
@@ -154,7 +179,7 @@ public class Game {
         hasHold = true;
         location = DEFAULT_LOCATION.clone();
         activePiece = queue.poll();
-        if (queue.size() < 7) queueStrategy.accept(queue, random);
+        if (queue.size() < 5) queueStrategy.accept(queue, random);
 
         return true;
     }
@@ -167,7 +192,7 @@ public class Game {
         activePiece = temp;
         if (activePiece == null) {
             activePiece = queue.poll();
-            if (queue.size() < 7) queueStrategy.accept(queue, random);
+            if (queue.size() < 5) queueStrategy.accept(queue, random);
         }
 
         hasHold = false;

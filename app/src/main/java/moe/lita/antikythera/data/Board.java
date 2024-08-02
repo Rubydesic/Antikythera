@@ -1,4 +1,4 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
 
 import java.util.BitSet;
 
@@ -69,8 +69,19 @@ public class Board {
         return res.toString();
     }
 
-    // TODO should probably rename this to copy or something; clone/Cloneable are pretty strange
+    // TODO should probably rename this to copy or something; clone/Cloneable are
+    // pretty strange
     public Board clone() {
         return new Board(this);
+    }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Board)) return false;
+        Board board = (Board) obj;
+        return board.width == width && board.height == height && board.data.equals(data);
+    }
+
+    public int hashCode() {
+        return data.hashCode();
     }
 }

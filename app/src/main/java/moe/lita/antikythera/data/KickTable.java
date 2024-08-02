@@ -1,4 +1,4 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
 
 public class KickTable {
         public static final int[][][] KICK_TABLE_DEFAULT = {

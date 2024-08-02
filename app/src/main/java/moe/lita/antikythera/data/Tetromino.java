@@ -1,4 +1,4 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
 
 public enum Tetromino {
     I(KickTable.KICK_TABLE_I_PIECE, "-1,0|0,0|1,0|2,0"),

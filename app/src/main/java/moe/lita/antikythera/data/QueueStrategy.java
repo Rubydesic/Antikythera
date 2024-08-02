@@ -1,4 +1,4 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
 
 import java.util.ArrayList;
 import java.util.List;

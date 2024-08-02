@@ -1,4 +1,4 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -1,4 +1,4 @@
-package moe.lita.antikythera;
+package moe.lita.antikythera.data;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ public class Randomizer {
     }
 
     public int next() {
-        return seed = 16807 * seed % Integer.MAX_VALUE;
+        return seed = Math.floorMod(16807 * seed, Integer.MAX_VALUE);
     }
 
     public double nextFloat() {
-        return (next() - 1) / Integer.MAX_VALUE;
+        return (double) (next() - 1) / Integer.MAX_VALUE;
     }
 
     public <T> void shuffle(List<T> list) {
@@ -33,5 +33,15 @@ public class Randomizer {
 
     public Randomizer clone() {
         return new Randomizer(this.seed);
+    }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Randomizer)) return false;
+        Randomizer random = (Randomizer) obj;
+        return seed == random.seed;
+    }
+
+    public int hashCode() {
+        return seed;
     }
 }
