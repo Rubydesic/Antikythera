@@ -30,13 +30,15 @@ class TetrominoTest {
 
     @Test
     void zSpinTriple() {
-        Board board = new Board(5, 5)
-                .set(3, 0, true)
-                .set(0, 3, true)
-                .set(1, 2, true)
-                .set(3, 2, true);
-
-        Game game = new Game(board, new Location(1, 3, 0), Tetromino.Z);
+        Game game = new Game.Builder()
+                .board(new Board(5, 5)
+                        .set(3, 0, true)
+                        .set(0, 3, true)
+                        .set(1, 2, true)
+                        .set(3, 2, true))
+                .location(new Location(1, 3, 0))
+                .activePiece(Tetromino.Z)
+                .build();
 
         game.rotate(1);
         assertEquals(new Location(1, 1, 1), game.location);
@@ -46,13 +48,15 @@ class TetrominoTest {
 
     @Test
     void tSpinTriple() {
-        Board board = new Board(5, 5)
-                .set(1, 0, true)
-                .set(1, 2, true)
-                .set(2, 4, true)
-                .set(3, 1, true);
-
-        Game game = new Game(board, new Location(1, 3, 0), Tetromino.T);
+        Game game = new Game.Builder()
+                .board(new Board(5, 5)
+                        .set(1, 0, true)
+                        .set(1, 2, true)
+                        .set(2, 4, true)
+                        .set(3, 1, true))
+                .location(new Location(1, 3, 0))
+                .activePiece(Tetromino.T)
+                .build();
 
         game.rotate(3);
         assertEquals(new Location(2, 1, 3), game.location);
@@ -62,13 +66,15 @@ class TetrominoTest {
 
     @Test
     void iSpinTriple() {
-        Board board = new Board(5, 5)
-                .set(0, 4, true)
-                .set(1, 2, true)
-                .set(2, 2, true)
-                .set(3, 2, true);
-
-        Game game = new Game(board, new Location(1, 3, 0), Tetromino.I);
+        Game game = new Game.Builder()
+                .board(new Board(5, 5)
+                        .set(0, 4, true)
+                        .set(1, 2, true)
+                        .set(2, 2, true)
+                        .set(3, 2, true))
+                .location(new Location(1, 3, 0))
+                .activePiece(Tetromino.I)
+                .build();
 
         game.rotate(1);
         assertEquals(new Location(0, 2, 1), game.location);

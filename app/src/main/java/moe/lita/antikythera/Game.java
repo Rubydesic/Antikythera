@@ -1,38 +1,87 @@
 package moe.lita.antikythera;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Queue;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Game {
     public static final int BOARD_HEIGHT = 23;
     public static final int BOARD_WIDTH = 10;
+    public static final Location DEFAULT_LOCATION = new Location(4, 21, 0);
 
     public Board board;
+    public boolean hasHold = true;
+    public Tetromino activePiece;
+    public Tetromino holdPiece;
     public Location location;
-    public Tetromino mino;
 
-    public Game(Board board, Location location, Tetromino mino) {
-        this.board = board;
-        this.location = location;
-        this.mino = mino;
+    public Deque<Tetromino> queue;
+    public Randomizer random;
+    public BiConsumer<Queue<Tetromino>, Randomizer> queueStrategy = QueueStrategy.SEVEN_BAG;
+
+    public static class Builder {
+        private Game game = new Game();
+
+        public Builder board(Board board) {
+            game.board = board;
+            return this;
+        }
+
+        public Builder queue(Deque<Tetromino> queue) {
+            game.queue = queue;
+            return this;
+        }
+
+        public Builder random(Randomizer random) {
+            game.random = random;
+            return this;
+        }
+
+        public Builder activePiece(Tetromino activePiece) {
+            game.activePiece = activePiece;
+            return this;
+        }
+
+        public Builder holdPiece(Tetromino holdPiece) {
+            game.activePiece = holdPiece;
+            return this;
+        }
+
+        public Builder hasHold(boolean hasHold) {
+            game.hasHold = hasHold;
+            return this;
+        }
+
+        public Builder location(Location location) {
+            game.location = location;
+            return this;
+        }
+
+        public Game build() {
+            if (game.board == null) game.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
+            if (game.queue == null) game.queue = new ArrayDeque<>();
+            if (game.random == null) game.random = new Randomizer(1);
+
+            while (game.queue.size() < 7)
+                game.queueStrategy.accept(game.queue, game.random);
+            if (game.activePiece == null) game.activePiece = game.queue.poll();
+            if (game.location == null) game.location = DEFAULT_LOCATION.clone();
+
+            return game;
+        }
     }
 
-    public Game(int width, int height, Location location, Tetromino mino) {
-        board = new Board(width, height);
-        this.location = location;
-        this.mino = mino;
-    }
-
-    public Game(Location location, Tetromino mino) {
-        this(BOARD_WIDTH, BOARD_HEIGHT, location, mino);
-    }
+    private Game() {}
 
     public String toString() {
         String boardString = board.toString();
         char[][] grid = Stream.of(boardString.split("\n"))
                 .map(String::toCharArray)
                 .toArray(char[][]::new);
-        for (int[] block : mino.getData()[location.rotation]) {
+        for (int[] block : activePiece.getData()[location.rotation]) {
             int y = board.height - 1 - (location.y + block[1]);
             int x = location.x + block[0];
             if (board.isValid(x, y))
@@ -49,7 +98,7 @@ public class Game {
     public boolean tapLeft() {
         Location newLocation = location.clone();
         newLocation.x--;
-        if (!board.check(newLocation, mino)) return false;
+        if (!board.check(newLocation, activePiece)) return false;
         location = newLocation;
         return true;
     }
@@ -63,7 +112,7 @@ public class Game {
     public boolean tapRight() {
         Location newLocation = location.clone();
         newLocation.x++;
-        if (!board.check(newLocation, mino)) return false;
+        if (!board.check(newLocation, activePiece)) return false;
         location = newLocation;
         return true;
     }
@@ -75,30 +124,52 @@ public class Game {
     }
 
     public boolean softDrop() {
-        Location newLocation = location.clone();
-        newLocation.y--;
-        if (!board.check(newLocation, mino)) return false;
-        location = newLocation;
-        return true;
+        boolean flag = false;
+        while (true) {
+            Location newLocation = location.clone();
+            newLocation.y--;
+            if (!board.check(newLocation, activePiece)) break;
+            flag = true;
+            location = newLocation;
+        }
+        return flag;
     }
 
     public boolean hardDrop() {
-        while (softDrop());
-        board.place(location, mino);
-        location = new Location(4, 21, 0);
-        mino = Tetromino.values()[(int) (Math.random() * 7)];
+        softDrop();
+        board.place(location, activePiece);
 
+        hasHold = true;
+        location = DEFAULT_LOCATION.clone();
+        activePiece = queue.poll();
+        if (queue.size() < 7) queueStrategy.accept(queue, random);
+
+        return true;
+    }
+
+    public boolean hold() {
+        if (!hasHold) return false;
+
+        Tetromino temp = holdPiece;
+        holdPiece = activePiece;
+        activePiece = temp;
+        if (activePiece == null) {
+            activePiece = queue.poll();
+            if (queue.size() < 7) queueStrategy.accept(queue, random);
+        }
+
+        hasHold = false;
         return true;
     }
 
     public boolean rotate(int rotation) {
         rotation = Math.floorMod(rotation, 4);
-        int[][][] kickTable = mino.getKickTable();
+        int[][][] kickTable = activePiece.getKickTable();
         for (int i = 0; i < kickTable[0].length; i++) {
             int x = kickTable[location.rotation][i][0] - kickTable[rotation][i][0];
             int y = kickTable[location.rotation][i][1] - kickTable[rotation][i][1];
             Location newLocation = new Location(location.x + x, location.y + y, rotation);
-            if (board.check(newLocation, mino)) {
+            if (board.check(newLocation, activePiece)) {
                 location = newLocation;
                 return true;
             }
