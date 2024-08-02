@@ -74,6 +74,18 @@ public class Game {
         }
     }
 
+    public Game clone() {
+        return new Builder()
+                .board(board.clone())
+                .queue(new ArrayDeque<>(queue))
+                .random(random.clone())
+                .activePiece(activePiece)
+                .holdPiece(holdPiece)
+                .hasHold(hasHold)
+                .location(location.clone())
+                .build();
+    }
+
     private Game() {}
 
     public String toString() {
