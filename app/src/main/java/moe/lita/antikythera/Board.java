@@ -13,7 +13,7 @@ public class Board {
     public final int height;
 
     public Board(int width, int height) {
-        data = new BitSet();
+        data = new BitSet(width * height);
         this.width = width;
         this.height = height;
     }
