@@ -1,34 +1,46 @@
 package moe.lita.antikythera;
 
+import java.util.BitSet;
+
 public class Board {
     /*
      * Bottom left corner is (0, 0)
      * Top right corner is (width - 1, height - 1)
      */
 
-    private final boolean[][] data;
+    private final BitSet data;
     public final int width;
     public final int height;
 
     public Board(int width, int height) {
-        data = new boolean[height][width];
+        data = new BitSet(width * height);
         this.width = width;
         this.height = height;
+    }
+
+    public Board(Board board) {
+        this.data = (BitSet) board.data.clone();
+        this.width = board.width;
+        this.height = board.height;
     }
 
     public boolean isValid(int x, int y) {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
+    private int indexFor(int x, int y) {
+        return y * width + x;
+    }
+
     public boolean get(int x, int y) {
         if (isValid(x, y))
-            return data[y][x];
+            return data.get(indexFor(x, y));
         return true;
     }
 
     public Board set(int x, int y, boolean val) {
         if (isValid(x, y))
-            data[y][x] = val;
+            data.set(indexFor(x, y), val);
         return this;
     }
 
@@ -57,11 +69,8 @@ public class Board {
         return res.toString();
     }
 
+    // TODO should probably rename this to copy or something; clone/Cloneable are pretty strange
     public Board clone() {
-        Board board = new Board(width, height);
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-                board.set(x, y, get(x, y));
-        return board;
+        return new Board(this);
     }
 }
